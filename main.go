@@ -37,6 +37,9 @@ func (t Training) meanSpeed() float64 {
 	// преодолённая_дистанция_за_тренировку_в_км / время_тренировки_в_часах
 	// t.Duration.Hours() возвращает такое же значение, но тогда мы не будем использовать константу MinInHours
 	durationInHours := t.Duration.Minutes() / MinInHours
+	if durationInHours == 0 {
+		return 0
+	}
 	return t.distance() / durationInHours
 }
 
@@ -112,7 +115,9 @@ func (r Running) Calories() float64 {
 // Это переопределенный метод TrainingInfo() из Training.
 func (r Running) TrainingInfo() InfoMessage {
 	// вставьте ваш код ниже
-	return r.Training.TrainingInfo()
+	message := r.Training.TrainingInfo()
+	message.Calories = r.Calories()
+	return message
 }
 
 // Константы для расчета потраченных килокалорий при ходьбе.
@@ -145,7 +150,9 @@ func (w Walking) Calories() float64 {
 // Это переопределенный метод TrainingInfo() из Training.
 func (w Walking) TrainingInfo() InfoMessage {
 	// вставьте ваш код ниже
-	return w.Training.TrainingInfo()
+	message := w.Training.TrainingInfo()
+	message.Calories = w.Calories()
+	return message
 }
 
 // Константы для расчета потраченных килокалорий при плавании.
@@ -169,7 +176,10 @@ type Swimming struct {
 // Это переопределенный метод Calories() из Training.
 func (s Swimming) meanSpeed() float64 {
 	// вставьте ваш код ниже
-	return float64(s.LengthPool) * float64(s.CountPool) / MInKm / float64(s.Duration)
+	if s.Duration == 0 {
+		return 0
+	}
+	return float64(s.LengthPool) * float64(s.CountPool) / MInKm / s.Duration.Hours()
 }
 
 // Calories возвращает количество калорий, потраченных при плавании.
@@ -185,7 +195,9 @@ func (s Swimming) Calories() float64 {
 // Это переопределенный метод TrainingInfo() из Training.
 func (s Swimming) TrainingInfo() InfoMessage {
 	// вставьте ваш код ниже
-	return s.Training.TrainingInfo()
+	message := s.Training.TrainingInfo()
+	message.Calories = s.Calories()
+	return message
 }
 
 // ReadData возвращает информацию о проведенной тренировке.
